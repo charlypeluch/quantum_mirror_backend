@@ -1,0 +1,10 @@
+{
+  "name": "db",
+  "connector": "mysql",
+  "url": "mysql://root:@localhost/quantum_mirror",
+  "host": "localhost",
+  "port": 3306,
+  "user": "root",
+  "password": "",
+  "database": "quantum_mirror"
+}

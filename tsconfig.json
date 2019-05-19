@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "@loopback/build/config/tsconfig.common.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "lib": ["es2018", "dom", "esnext.asynciterable"]
+  }
+}
