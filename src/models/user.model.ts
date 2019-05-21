@@ -21,6 +21,16 @@ export class User extends Base {
     unique: true,
   })
   alias?: string;
+
+  @property({
+    type: 'number'
+  })
+  pattern?: number;
+
+  @property({
+    type: 'string'
+  })
+  facial?: number;
   // Define well-known properties here
 
   // Indexer property to allow additional data
