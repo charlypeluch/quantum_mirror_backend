@@ -50,7 +50,7 @@ export class UserController {
     validateCredentials(_.pick(user, ['email', 'password']));
     user.password = await this.passwordHahser.hashPassword(user.password);
 
-    // Check credentials no repeaa
+    // Check credentials no repeat
     const foundUser = await this.userRepository.findOne({where: {email: user.email}});
     if (foundUser)
       throw new HttpErrors['NotFound'](`User email ${user.email} already exist`);
@@ -125,14 +125,25 @@ export class UserController {
     responses: {
       '204': {
         description: 'User PATCH success',
+        content: { 'application/json':
+          {
+            schema: {
+              type: 'object', properties: {
+                id: {type: 'number'},
+                is_udpdate: {type: 'boolean'}
+              },
+            },
+          },
+        },
       },
     },
   })
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() user: User,
-  ): Promise<void> {
+  ): Promise<any> {
     await this.userRepository.updateById(id, user);
+    return {'id': id, 'is_update': true};
   }
 
   @put('/users/{id}', {

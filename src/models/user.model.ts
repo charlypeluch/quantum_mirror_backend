@@ -5,14 +5,14 @@ import {Base, Mirror, MirrorsUsers} from '.';
 export class User extends Base {
   @property({
     type: 'string',
-    required: true,
+    // required: true,
     unique: true,
   })
   email: string;
 
   @property({
     type: 'string',
-    required: true,
+    // required: true,
   })
   password: string;
 
