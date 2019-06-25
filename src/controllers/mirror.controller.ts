@@ -18,6 +18,7 @@ import {
 } from '@loopback/rest';
 import {Mirror} from '../models';
 import {MirrorRepository} from '../repositories';
+import {authenticate, UserProfile } from '@loopback/authentication';
 
 export class MirrorController {
   constructor(
@@ -33,6 +34,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async create(@requestBody() mirror: Mirror): Promise<Mirror> {
     return await this.mirrorRepository.create(mirror);
   }
@@ -45,6 +47,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async count(
     @param.query.object('where', getWhereSchemaFor(Mirror)) where?: Where,
   ): Promise<Count> {
@@ -63,6 +66,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
     @param.query.object('filter', getFilterSchemaFor(Mirror)) filter?: Filter,
   ): Promise<Mirror[]> {
@@ -77,6 +81,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody() mirror: Mirror,
     @param.query.object('where', getWhereSchemaFor(Mirror)) where?: Where,
@@ -92,6 +97,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async findById(@param.path.number('id') id: number): Promise<Mirror> {
     return await this.mirrorRepository.findById(id);
   }
@@ -103,6 +109,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() mirror: Mirror,
@@ -117,6 +124,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() mirror: Mirror,
@@ -131,6 +139,7 @@ export class MirrorController {
       },
     },
   })
+  @authenticate('jwt')
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.mirrorRepository.deleteById(id);
   }
