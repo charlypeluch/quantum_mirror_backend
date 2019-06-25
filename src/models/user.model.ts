@@ -30,7 +30,7 @@ export class User extends Base {
   @property({
     type: 'string'
   })
-  facial?: number;
+  facial?: string;
   // Define well-known properties here
 
   // Indexer property to allow additional data

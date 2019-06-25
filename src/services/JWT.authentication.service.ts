@@ -76,6 +76,34 @@ export class JWTAuthenticationService {
   }
 
   /**
+   * A function that retrieves the user with given credentials. Generates
+   * JWT access token using user profile as payload if user found.
+   *
+   * Usually a request's corresponding controller function filters the credential
+   * fields and invokes this function.
+   *
+   * @param credentials The user credentials including email and password.
+   */
+  async getAccessTokenForMirror(pattern: String): Promise<string> {
+    const foundUser = await this.userRepository.findOne({
+      where: {pattern: pattern},
+    });
+    if (!foundUser) {
+      throw new HttpErrors['NotFound'](
+        `User with pattern not found.`,
+      );
+    }
+
+    const currentUser = _.pick(toJSON(foundUser), ['id', 'email', 'alias']);
+    // Generate user token using JWT
+    const token = await signAsync(currentUser, this.jwt_secret, {
+      expiresIn: 7200,
+    });
+
+    return token;
+  }
+
+  /**
    * Decodes the user's information from a valid JWT access token.
    * Then generate a `UserProfile` instance as the returned user.
    *

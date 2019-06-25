@@ -41,3 +41,22 @@ export const CredentialsRequestBody = {
     'application/json': {schema: CredentialsSchema},
   },
 };
+
+export const CredentialsRequestMirrorBody = {
+  description: 'The input of login mirror function',
+  required: true,
+  content: {
+    'application/json': {schema: {type: 'number'}},
+  },
+};
+
+export const MirrorCodeRequestBody = {
+  type: 'object',
+  required: true,
+  description: 'The input of mirror code function',
+  properties: {
+    code: {
+      type: 'string'
+    }
+  },
+};

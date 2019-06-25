@@ -16,7 +16,10 @@ import {
   put,
   del,
   requestBody,
+  Request,
+  Response,
   HttpErrors,
+  RestBindings,
 } from '@loopback/rest';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
@@ -25,6 +28,7 @@ import {PasswordHasher} from '../services/hash.password.bcryptjs';
 import {PasswordHasherBindings} from '../keys';
 import {JWTAuthenticationService, validateCredentials } from '../services/JWT.authentication.service';
 import {authenticate } from '@loopback/authentication';
+import * as multer from 'multer';
 import * as _ from 'lodash';
 
 export class UserController {
@@ -169,5 +173,64 @@ export class UserController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.userRepository.deleteById(id);
+  }
+
+  // Upload profile facial image
+  // https://stackoverflow.com/questions/53102928/loopback-4-upload-multipart-form-data-via-post-method?rq=1
+  @post('/users/facial/{id}', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'Upload facial',
+      },
+    },
+  })
+  async uploadFacial(
+    @param.path.number('id') id: number,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<Object> {
+    // const storage = multer.memoryStorage();
+    var _filename = '';
+    var storage = await multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, '/tmp/quantum-mirror-data')
+      },
+      filename: function (req, file, cb) {
+        _filename = file.fieldname + '-' + Date.now();
+        cb(null, _filename);
+      }
+    })
+    const upload = multer({storage: storage});
+    return new Promise<object>((resolve, reject) => {
+      upload.any()(request, response, err => {
+        // var _user = new User({facial: request.files[0].path});
+        // this.userRepository.updateById(id, _user);
+
+        if (err) return reject(err);
+        resolve({
+          files: request.files,
+          // fields: (request as any).fields,
+          fields: request.body
+        });
+      });
+    });
   }
 }

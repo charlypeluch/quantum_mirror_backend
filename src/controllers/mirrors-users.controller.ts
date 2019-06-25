@@ -15,8 +15,12 @@ import {
   put,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
+import {inject} from '@loopback/core';
+import {authenticate, UserProfile } from '@loopback/authentication';
 import {MirrorsUsers, Mirror, User} from '../models';
+import {MirrorCodeRequestBody} from './specs/user-controller.specs';
 import {MirrorsUsersRepository, MirrorRepository, UserRepository} from '../repositories';
 
 export class MirrorsUsersController {
@@ -41,7 +45,8 @@ export class MirrorsUsersController {
       }
     }
   })
-  async find(
+  @authenticate('jwt')
+  async findMirrorUsers(
     @param.path.string('mirrorId') mirrorId: number,
     @param.query.object('filter', getFilterSchemaFor(User)) filter?: Filter
   ): Promise<User[]> {
@@ -49,17 +54,79 @@ export class MirrorsUsersController {
   }
 
 
-  // @post('/mirrors', {
-  //   responses: {
-  //     '200': {
-  //       description: 'MirrorsUsers model instance',
-  //       content: {'application/json': {schema: {'x-ts-type': MirrorsUsers}}},
-  //     },
-  //   },
-  // })
-  // async create(@requestBody() mirrorsUsers: MirrorsUsers): Promise<MirrorsUsers> {
-  //   return await this.mirrorsUsersRepository.create(mirrorsUsers);
-  // }
+  @get('/user/mirrors', {
+    responses: {
+      '200': {
+        description: 'Array of Mirror model instances',
+        content: {
+          'application/json': {
+            schema: { type: 'array', items: { 'x-ts-type': Mirror } }
+          }
+        }
+      }
+    }
+  })
+  @authenticate('jwt')
+  async findUserMirrors(
+    @inject('authentication.currentUser') user: UserProfile,
+    @param.query.object('filter', getFilterSchemaFor(Mirror)) filter?: Filter
+  ): Promise<Mirror[]> {
+    return await this.userRepository.mirrors(parseInt(user.id)).find(filter);
+  }
+
+
+  @post('/user/mirrors', {
+    responses: {
+      '200': {
+        description: 'Assign new mirror to user Model',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'boolean',
+              properties: {
+                result: {
+                  type: 'boolean',
+                },
+              },
+            }
+          }
+        },
+      },
+    },
+  })
+
+  @authenticate('jwt')
+  async assignUserMirror(
+    @inject('authentication.currentUser') user: UserProfile,
+    @requestBody(MirrorCodeRequestBody) data: any): Promise<Boolean> {
+    const mirror = await this.mirrorRepository.findOne({where: {code: data.code}});
+    if (!mirror)
+      throw new HttpErrors['NotFound'](`Mirror code ${data.code} not found`);
+
+    const user_mirror = await this.mirrorsUsersRepository.findOne({where: {userId: user.id, mirrorId: mirror.id}});
+    if (user_mirror)
+      throw new HttpErrors['NotFound'](`Mirror name [${mirror.name}] already asigned in user ${user.name}`);
+
+    let _data = new MirrorsUsers({userId: parseInt(user.id), mirrorId: mirror.id});
+    this.mirrorsUsersRepository.create(_data);
+
+    return true;
+  }
+
+  @del('/user/mirrors/{mirrorId}', {
+    responses: {
+      '204': {
+        description: 'MirrorsUsers DELETE success',
+      },
+    },
+  })
+  @authenticate('jwt')
+  async unassignUserMirror(
+    @inject('authentication.currentUser') user: UserProfile,
+    @param.path.number('mirrorId') mirrorId: number
+  ): Promise<void> {
+    await this.mirrorsUsersRepository.deleteAll({userId: user.id, mirrorId: mirrorId});
+  }
   //
   // @get('/mirrors/count', {
   //   responses: {

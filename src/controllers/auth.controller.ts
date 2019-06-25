@@ -3,6 +3,7 @@ import {get, post,requestBody} from '@loopback/rest';
 import {authenticate, UserProfile } from '@loopback/authentication';
 import {
   CredentialsRequestBody,
+  CredentialsRequestMirrorBody,
   UserProfileSchema,
 } from './specs/user-controller.specs';
 import {Credentials} from '../repositories/user.repository';
@@ -43,6 +44,36 @@ export class AuthController {
     validateCredentials(credentials);
     const token = await this.jwtAuthenticationService.getAccessTokenForUser(
       credentials,
+    );
+    return {token};
+  }
+
+  @post('/auth-mirror', {
+    responses: {
+      '200': {
+        description: 'Token',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'string',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  // @authenticate('jwt', {action: 'generateAccessToken'})
+  async authMirror(
+    @requestBody(CredentialsRequestMirrorBody) pattern: string,
+  ): Promise<{token: string}> {
+    const token = await this.jwtAuthenticationService.getAccessTokenForMirror(
+      pattern,
     );
     return {token};
   }

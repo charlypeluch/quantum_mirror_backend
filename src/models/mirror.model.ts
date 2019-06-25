@@ -7,12 +7,25 @@ export class Mirror extends Base {
     type: 'string',
     required: true,
   })
+  code: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   name: string;
 
   @property({
     type: 'string',
   })
   location?: string;
+
+  @property({
+    type: 'boolean',
+    required: true,
+    default: true,
+  })
+  is_active: boolean;
 
   @property({
     type: 'boolean',
