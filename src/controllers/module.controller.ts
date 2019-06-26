@@ -16,6 +16,8 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
+import {inject} from '@loopback/core';
+import {authenticate, UserProfile } from '@loopback/authentication';
 import {Modules} from '../models';
 import {ModulesRepository} from '../repositories';
 
@@ -33,6 +35,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async create(@requestBody() modules: Modules): Promise<Modules> {
     return await this.modulesRepository.create(modules);
   }
@@ -45,6 +48,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async count(
     @param.query.object('where', getWhereSchemaFor(Modules)) where?: Where,
   ): Promise<Count> {
@@ -63,6 +67,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
     @param.query.object('filter', getFilterSchemaFor(Modules)) filter?: Filter,
   ): Promise<Modules[]> {
@@ -77,6 +82,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody() modules: Modules,
     @param.query.object('where', getWhereSchemaFor(Modules)) where?: Where,
@@ -92,6 +98,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async findById(@param.path.number('id') id: number): Promise<Modules> {
     return await this.modulesRepository.findById(id);
   }
@@ -103,6 +110,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() modules: Modules,
@@ -117,6 +125,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() modules: Modules,
@@ -131,6 +140,7 @@ export class ModuleController {
       },
     },
   })
+  @authenticate('jwt')
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.modulesRepository.deleteById(id);
   }
