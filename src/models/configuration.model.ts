@@ -17,7 +17,6 @@ export class Configuration extends Base {
 
   @property({
     type: 'string',
-    id: true,
   })
   name?: string;
 
