@@ -23,6 +23,13 @@ export class Modules extends Base {
   @property({
     type: 'boolean',
     required: true,
+    default: false,
+  })
+  is_configurable: boolean;
+
+  @property({
+    type: 'boolean',
+    required: true,
     default: true,
   })
   is_active: boolean;

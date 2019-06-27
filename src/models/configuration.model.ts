@@ -11,7 +11,6 @@ export class Configuration extends Base {
 
   @property({
     type: 'number',
-    required: true,
   })
   mirror_id: number;
 
