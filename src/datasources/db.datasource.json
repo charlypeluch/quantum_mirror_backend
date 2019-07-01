@@ -1,10 +1,10 @@
 {
   "name": "db",
   "connector": "mysql",
-  "url": "mysql://root:@localhost/quantum_mirror",
-  "host": "localhost",
+  "url": "mysql://quantum:quantum159357@quantum-db.c1qtz9iifqv7.eu-west-1.rds.amazonaws.com/quantum_mirror",
+  "host": "quantum-db.c1qtz9iifqv7.eu-west-1.rds.amazonaws.com",
   "port": 3306,
-  "user": "root",
-  "password": "",
+  "user": "quantum",
+  "password": "quantum159357",
   "database": "quantum_mirror"
 }
