@@ -48,7 +48,7 @@ export class ConfigurationController {
       },
     },
   })
-  // @authenticate('jwt')
+  @authenticate('jwt')
   async count(
     @param.query.object('where', getWhereSchemaFor(Configuration)) where?: Where,
   ): Promise<Count> {
